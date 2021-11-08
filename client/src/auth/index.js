@@ -78,25 +78,30 @@ function AuthContextProvider(props) {
                 })
                 history.push("/");
                 store.loadIdNamePairs();
-            } else if (response.status === 400) {
-                console.log("failed to log in - bad request")
             }
         } catch (err) {
-            console.log(err)
+            console.log("failed to log in - bad request")
+            store.setError("Failed to log in. Email and Password combination does not exist.");
         }
      }
 
     auth.registerUser = async function(userData, store) {
-        const response = await api.registerUser(userData);      
-        if (response.status === 200) {
-            authReducer({
-                type: AuthActionType.REGISTER_USER,
-                payload: {
-                    user: response.data.user
-                }
-            })
-            history.push("/");
-            store.loadIdNamePairs();
+        try {
+            const response = await api.registerUser(userData);      
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+                store.loadIdNamePairs();
+            }
+        } catch (err) {
+            if (err.response.status === 400) {
+                store.setError(err.response.data.errorMessage);
+            }
         }
     }
 

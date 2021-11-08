@@ -8,6 +8,7 @@ import {
     HomeWrapper,
     LoginScreen,
     RegisterScreen,
+    ErrorModal,
     Statusbar,
     WorkspaceScreen
 } from './components'
