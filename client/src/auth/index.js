@@ -105,6 +105,27 @@ function AuthContextProvider(props) {
         }
     }
 
+    auth.logoutUser = async function(userData, store) {
+        try {
+            const response = await api.logoutUser();      
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+                store.loadIdNamePairs();
+            }
+        } catch (err) {
+            if (err.response.status === 400) {
+                store.setError(err.response.data.errorMessage);
+            }
+        }
+    }
+
+
     return (
         <AuthContext.Provider value={{
             auth
