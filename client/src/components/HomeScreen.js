@@ -4,6 +4,7 @@ import ListCard from './ListCard.js'
 import { Fab, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import List from '@mui/material/List';
+import DeleteModal from './DeleteModal';
 /*
     This React component lists all the top5 lists in the UI.
     
@@ -35,24 +36,27 @@ const HomeScreen = () => {
             </List>;
     }
     return (
-        <div id="top5-list-selector">
-            <div id="list-selector-heading">
-            <Fab 
-                color="primary" 
-                aria-label="add"
-                id="add-list-button"
-                onClick={handleCreateNewList}
-            >
-                <AddIcon />
-            </Fab>
-                <Typography variant="h2">Your Lists</Typography>
+        <container>
+            <DeleteModal />
+            <div id="top5-list-selector">
+                <div id="list-selector-heading">
+                <Fab 
+                    color="primary" 
+                    aria-label="add"
+                    id="add-list-button"
+                    onClick={handleCreateNewList}
+                >
+                    <AddIcon />
+                </Fab>
+                    <Typography variant="h2">Your Lists</Typography>
+                </div>
+                <div id="list-selector-list">
+                    {
+                        listCard
+                    }
+                </div>
             </div>
-            <div id="list-selector-list">
-                {
-                    listCard
-                }
-            </div>
-        </div>)
-}
+        </container>)
+}        
 
 export default HomeScreen;
