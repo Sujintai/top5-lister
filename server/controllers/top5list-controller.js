@@ -8,7 +8,8 @@ createTop5List = (req, res) => {
             error: 'You must provide a Top 5 List',
         })
     }
-
+    
+    body.userId = req.userId; // associate with user
     const top5List = new Top5List(body);
     console.log("creating top5List: " + JSON.stringify(top5List));
     if (!top5List) {
@@ -42,6 +43,7 @@ updateTop5List = async (req, res) => {
         })
     }
 
+    
     Top5List.findOne({ _id: req.params.id }, (err, top5List) => {
         console.log("top5List found: " + JSON.stringify(top5List));
         if (err) {
@@ -50,7 +52,13 @@ updateTop5List = async (req, res) => {
                 message: 'Top 5 List not found!',
             })
         }
-
+        // verify if authorized
+        if (req.userId !== top5List.userId) {
+            return res.status(401).json({
+                err,
+                message: 'Unauthorized',
+            })
+        }
         top5List.name = body.name
         top5List.items = body.items
         top5List
@@ -81,6 +89,13 @@ deleteTop5List = async (req, res) => {
                 message: 'Top 5 List not found!',
             })
         }
+        // verify if authorized
+        if (req.userId !== top5List.userId) {
+            return res.status(401).json({
+                err,
+                message: 'Unauthorized',
+            })
+        }
         Top5List.findOneAndDelete({ _id: req.params.id }, () => {
             return res.status(200).json({ success: true, data: top5List })
         }).catch(err => console.log(err))
@@ -92,11 +107,18 @@ getTop5ListById = async (req, res) => {
         if (err) {
             return res.status(400).json({ success: false, error: err });
         }
+        // verify if authorized
+        if (req.userId !== list.userId) {
+            return res.status(401).json({
+                err,
+                message: 'Unauthorized',
+            })
+        }
         return res.status(200).json({ success: true, top5List: list })
     }).catch(err => console.log(err))
 }
 getTop5Lists = async (req, res) => {
-    await Top5List.find({}, (err, top5Lists) => {
+    await Top5List.find({ userId: req.userId }, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
@@ -105,11 +127,12 @@ getTop5Lists = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Top 5 Lists not found` })
         }
+
         return res.status(200).json({ success: true, data: top5Lists })
     }).catch(err => console.log(err))
 }
 getTop5ListPairs = async (req, res) => {
-    await Top5List.find({ }, (err, top5Lists) => {
+    await Top5List.find({ userId: req.userId }, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }
